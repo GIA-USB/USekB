@@ -1,0 +1,61 @@
+#include "Motor.nxc"
+
+/* watchColor es una funcion que obtiene la media
+* de los colores que ve. Pero elimina valores
+* extremos. (>= 50 o <= 0)
+*/
+
+int watchColor(int p) {
+   int sopa;
+   int res;
+   int i = 0;
+   res = 0;
+   while (i <= p) {
+      sopa = SensorValue(S3);
+      if (sopa < 50) {
+         res = res + sopa;
+         i = i + 1;
+      }
+   }
+   res = res/p;
+   return res;
+}
+
+
+sub botar(){
+         MotorRotateAngle(OUT_B, 100, 100, 300, 0, 0);
+         Off(OUT_B);
+         Wait(100);
+         MotorRotateAngle(OUT_B, 100, -50, 300, 0, 0);
+         Off(OUT_B);
+         Wait(100);
+}
+
+
+task main() {
+     SetSensorColorBlue(S3);
+     int color = watchColor(30);
+
+     while (color >= 60) {
+           color = watchColor(30);
+           Wait(300);
+     }
+
+     while (color <= 43 && color >= 20) {
+             botar();
+             Wait(100);
+
+             color = watchColor(30);
+             NumOut(1,LCD_LINE4,color);
+
+             while (color >= 60) {
+                   color = watchColor(30);
+                   Wait(300);
+             }
+
+    }
+    
+
+}
+
+}

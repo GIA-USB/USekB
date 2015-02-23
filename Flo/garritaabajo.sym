@@ -1,0 +1,55 @@
+#SYMBOLS
+Index	Identifier	Type	Flag	Data	Size	RefCount
+0	__signed_stack_001main	6	1	0	4	2
+1	__D0main	6	1	4	4	2
+2	__Wait_7qG2_ms_7qG2_000_inline_main	5	1	8	4	4
+3	____initialize_global_data_return	1	1	12	1	3
+4	__constVal63	2	0	13	1	2
+5	__constVal96	2	0	14	1	2
+6	__constVal3	2	0	15	1	1
+7	__constVal0	2	1	16	1	6
+8	__constVal32	2	0	17	1	6
+9	__constVal7	2	0	18	1	1
+10	__PFTmp	1	1	19	1	1
+11	__constVal2	2	0	20	1	2
+#SOURCES
+Clump	Line	PC	Source
+0	1	0	#line 1 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	2	0		subcall __initialize_global_data, ____initialize_global_data_return
+0	1	2	#line 1 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	1	2	#line 1 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	2	2		set __signed_stack_001main, 50
+0	1	5	#line 1 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	1	5	#line 1 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	2	5		set __D0main, 1
+0	2	8	#line 2 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	3	8	#pragma macro 7
+0	3	8		setout __constVal2, 2, __signed_stack_001main, 1, __constVal7, 8, __D0main, 6, __constVal32, 7, __constVal0, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+0	3535	31	#line 3535 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	2	31	#line 2 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	2	31	#line 2 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	3	31		set __Wait_7qG2_ms_7qG2_000_inline_main, 30
+0	2	34	#line 2 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	8551	34	#line 8551 "NXCDefs.h"
+0	8552	34		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_main
+0	8551	37	#line 8551 "NXCDefs.h"
+0	6	37	#line 6 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	6	37	#line 6 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	7	37		set __Wait_7qG2_ms_7qG2_000_inline_main, 400
+0	6	40	#line 6 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	8551	40	#line 8551 "NXCDefs.h"
+0	8552	40		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_main
+0	8551	43	#line 8551 "NXCDefs.h"
+0	7	43	#line 7 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	8	43	#line 8 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	9	43	#pragma macro 7
+0	9	43		setout __constVal2, 2, __constVal0, 1, __constVal3, 8, __constVal0, 6, __constVal32, 7, __constVal0, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+0	3559	66	#line 3559 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	8	66	#line 8 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+0	9	66		exit -1, -1
+1	11	0	#line 11 "C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc"
+1	12	0		subret ____initialize_global_data_return
+#CLUMPS
+Clump	Name	Offset	File
+0	main	0	C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc
+1	__initialize_global_data	69	C:\Users\KARENT~1\AppData\Local\Temp\temp.nxc

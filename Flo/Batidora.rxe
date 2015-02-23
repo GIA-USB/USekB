@@ -1,0 +1,14 @@
+#include "Motor.nxc"
+#define MOTORS OUT_AB
+
+task main(){
+    while (TRUE){
+          OnRevSyncEx(OUT_AB, 70, 0, RESET_ALL);
+          Wait(300);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(42);
+          OnFwdSyncEx(OUT_AB, 70, 0, RESET_ALL);
+          Wait(300);
+    }
+}
+

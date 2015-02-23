@@ -1,0 +1,13 @@
+#include "procedures1.nxc"
+
+task main() {
+    while (TRUE) {
+          SaludoChino();
+          Wait(100);
+          RemoteStartProgram(1, "Color.rxe");
+          Wait(8000);
+          SaludoChino();
+          Wait(500);
+     }
+              
+}

@@ -1,0 +1,40 @@
+#include "Motor.nxc"
+#include "procColor.nxc"
+
+task main() {
+     SetSensorColorBlue(S3);
+     int color;
+
+     MotorRotateAngle(OUT_A, 100, 120, 800, 0, 0);
+     Wait(50);
+     
+     for(int i = 0 ; i < 25 ; i++){
+             PlaySound(3);
+             color = watchColor(5);
+             ClearScreen();
+             NumOut(1,LCD_LINE5,color);
+             while (color >= 60) {
+
+                   color = watchColor(30);
+                   Wait(300);
+             }
+
+             if(color < 60 && color > 37) {
+                      patear();
+             }
+             else if (color <= 37 && color >= 23) {
+                     botar();
+             }
+
+             else if (color < 23 && color >= 0) {
+                          palito();
+             }
+             
+             Wait(600);
+    }
+    
+    bajarPata();
+    Wait(500);
+
+}
+

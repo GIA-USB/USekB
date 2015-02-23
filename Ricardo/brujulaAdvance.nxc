@@ -1,0 +1,28 @@
+#include "proceduresPegaso.nxc"
+#include "Motor.nxc"
+#define MOTORS OUT_AB
+
+task main(){
+   /*  OnRevSyncEx(OUT_AB, 60, 0, RESET_ALL);
+     Wait(100);
+     SetSensorLowspeed(S2);
+     SetSensorLowspeed(S4);   // Inicializo la Brujula
+     getPositionPegaso(235, 65, 25);
+     Wait(2000);
+    */
+    SetSensorLowspeed(S3PlaySound(PlayTone(PlayTone("frequency", "duration");
+                                           , "duration");
+                                  );
+                        );   // Inicializo la Brujula
+     int k = degrees(50, 54);
+     ClearScreen();
+     NumOut(1,LCD_LINE7,k);
+    /*
+     int k = degrees(50, 54);
+     ClearScreen();
+     NumOut(1,LCD_LINE7,k);
+     int aux = SensorHTCompass(S4);
+     NumOut(1,LCD_LINE8,aux);
+     Wait(400);
+     */
+}

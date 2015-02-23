@@ -1,0 +1,10 @@
+#include "Motor.nxc"
+#include "procColor.nxc"
+
+task main() {
+     MotorRotateAngle(OUT_A, 100, -70, 950, 0, 0);
+      Wait(200);
+      MotorRotateAngle(OUT_A, 100, 100, 800, 0, 0);
+      Wait(125);
+     bajarPata();
+}

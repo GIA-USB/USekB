@@ -1,0 +1,33 @@
+int watchColor(int p) {
+   int sopa;
+   int res = 0;
+   int i = 0;
+   while (i <= p) {
+      sopa = SensorValue(S3);
+      if (sopa < 50) {
+         res = res + sopa;
+         i = i + 1;
+         ClearScreen();
+         NumOut(1,LCD_LINE7,i);
+         NumOut(1,LCD_LINE8,res);
+      }
+   }
+   res = res/p;
+   return res;
+}
+
+task main() {
+
+     SetSensorColorRed(S3);
+     int color;
+     int i;
+     
+     for(int i = 0 ; i < 30 ; i++){
+             ClearScreen();
+             Wait(400);
+             color = watchColor(30);
+             NumOut(1,LCD_LINE4,color);
+             Wait(400);
+     }
+
+}

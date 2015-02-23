@@ -1,0 +1,42 @@
+#include "Motor.nxc"
+ /* Motor Izquierda: OUT_A
+    Motor Derecha: OUT_B
+    Motor Garrita: OUT_C
+    
+    ESTAR PENDIENTE: Si hay zona muerta descomentar las últimas dos lineas del código
+    y quitar el último pedazo del ala derecha
+  */
+task main(){
+     int i = 0;
+     int fuerza = 90;
+     //OnFwd(OUT_C,20);
+     MotorRotateAngle(OUT_C, 20, 120, 450, 0, 0);
+     Wait(450);
+     while (i < 2) {
+
+           MotorRotateAngle(OUT_B, 100, 120, 450, 0, 0);
+           Wait(500);
+
+           OnRev(OUT_C,10);
+           Wait(300);
+           i = i + 1;
+           
+     }
+     
+    MotorRotateAngle(OUT_A, 100, 120, 450, 0, 0);
+    Wait(300);
+     
+    MotorRotateAngle(OUT_AB, 90, 120, 450, 0, 0);
+    Wait(500);
+    
+    while(true){
+          if (fuerza > 40){
+              fuerza = fuerza - 10;
+          }
+          MotorRotateAngle(OUT_AB, fuerza, 120, 450, 0, 0);
+          Wait(500);
+
+    }
+
+     
+}

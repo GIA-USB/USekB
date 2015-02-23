@@ -1,0 +1,10 @@
+task main(){
+    OnRev(OUT_C, 55);
+    Wait(1500);
+    /*OnFwdReg(OUT_C, 100, OUT_REGMODE_SPEED);
+    Wait(250);
+
+    */
+    Off(OUT_C);
+    Wait(100);
+}

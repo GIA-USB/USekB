@@ -1,0 +1,27 @@
+#include "procedures1.nxc"
+#include "Motor.nxc"
+#define MOTORS OUT_AB
+
+task main(){
+ /*    MotorStartSync(OUT_A,OUT_B,60);
+     Wait(100);
+     SetSensorLowspeed(S4);
+     SetSensorLowspeed(S2);
+     SetSensorLowspeed(S4);   // Inicializo la Brujula
+     getPosition(235, 65, 25);
+     Wait(2000); */
+     
+     SetSensorLowspeed(S4);   // Inicializo la Brujula
+     int k = degrees(50, 98);
+     ClearScreen();
+     NumOut(1,LCD_LINE7,k);
+     Wait(1000);
+    /*
+     int k = degrees(50, 54);
+     ClearScreen();
+     NumOut(1,LCD_LINE7,k);
+     int aux = SensorHTCompass(S4);
+     NumOut(1,LCD_LINE8,aux);
+     Wait(400);
+     */
+}

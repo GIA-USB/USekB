@@ -1,0 +1,806 @@
+#include "Motor.nxc"
+#define MOTORS OUT_AB
+#define CLAWMOTOR  OUT_C
+#define ERRORGRADOS 2
+#define velMin 40
+
+int north;
+int south;
+int east;
+int west;
+
+long time;
+
+bool fin;
+
+sub inicio(){
+    fin = TRUE;
+}
+
+sub final(){
+    fin = FALSE;
+}
+
+bool verFin(){
+    return fin;
+}
+
+/*
+ * checkUs: Check the ultrasonic sensor.
+ */
+
+// Revisado
+int checkUS() {
+   int bound = 5;
+   int res = 0;
+
+   for (int i = 0 ; i < bound ; i++) {
+      res = res + SensorUS(S2);
+      ClearScreen();
+      NumOut(1,LCD_LINE8,res);
+   }
+
+   res = res/bound;
+   return res;
+}
+
+/*
+ * degrees: Calculate the average of p measurements.
+ */
+
+// Revisado
+int degrees(int p,int direccion) {
+   int res = 0;
+   int aux = 0;
+   int cont = 0;
+
+   for  (int i = 0 ;i < p; i++)  {
+      aux = SensorHTCompass(S4);
+
+      if (abs(aux - direccion) < 6){
+         res = res + SensorHTCompass(S4);
+         cont = cont + 1;
+         ClearScreen();
+         NumOut(1,LCD_LINE4,res);
+      }
+   }
+
+   if (res == 0) {
+      res = aux;
+   } else {
+     res = res/cont;
+   }
+   return res;
+}
+
+
+/*
+   Obtiene el grado que mide la brújula calculando un promedio de
+   mediciones.
+*/
+int grado(){
+    int prom = 0;
+    int num = 30;
+    for ( int i = 0 ; i < num; ++i){
+        prom = prom + SensorHTCompass(S4);
+    }
+    prom = prom / num;
+    return prom;
+}
+
+
+
+sub calibrarCoord() {
+    east = grado();
+    north = (east + 270)%360;
+    west = (east + 180)%360;
+    south = (east + 90)%360;
+}
+
+sub SaludoChino() {
+    OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+    Wait(300);
+    OnFwdSyncEx(OUT_AB, 100, 0, RESET_ALL);
+    Wait(300);
+    OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+    Wait(300);
+    OnFwdSyncEx(OUT_AB, 100, 0, RESET_ALL);
+    Wait(300);
+    Off(OUT_AB);
+    //Wait(100);
+}
+
+sub MilanesaChina(){
+     SaludoChino();
+     Wait(150);
+     RemoteStartProgram(1, "MilanesaAzul.rxe");
+     Wait(500);
+}
+
+sub Batidora(){
+    int i = 0;
+    while (i < 3){
+          OnRevSyncEx(OUT_AB, 70, 0, RESET_ALL);
+          Wait(300);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(100);
+          OnFwdSyncEx(OUT_AB, 70, 0, RESET_ALL);
+          Wait(300);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(70);
+          i = i + 1;
+    }
+}
+
+
+// Revisado
+sub startTime() {
+	time = CurrentTick();
+}
+
+
+
+/*
+ * inTime: Return false if we reach the total time,
+ * otherwise return false.
+ */
+
+//Revisado
+bool inTime(long totalTime){
+  NumOut(1,LCD_LINE7,CurrentTick());
+	if (abs(CurrentTick() - time) < totalTime) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/*
+ * setInitialPosition: Set the relative values of ours
+ * cardinals points.
+ */
+
+// Revisado
+sub setInitialPosition(int n, int s, int e, int w) {
+	north = n;
+	south = s;
+	east = e;
+	west = w;
+}
+
+/*
+ * checkUs: Check the ultrasonic sensor.
+ */
+
+
+
+
+
+/*
+* clawUp: Held the claw up
+*/
+
+// Revisado
+sub clawUp(){
+    OnRev(OUT_C,60);
+    Wait(1000);
+    Off(OUT_C);
+    Wait(1000);
+}
+
+/*
+* clawDown: Held the claw down
+*/
+
+// Revisado
+
+/*
+* Los waits estan para hacer que la bajada
+* de la garra sea super suave y no se 
+* destruya.
+*/
+sub clawDown(){
+    OnFwd(OUT_C,60);
+    Wait(500);
+    OnRev(OUT_C,30);
+    Wait(500);
+    OnFwd(OUT_C,30);
+    Wait(500);
+    Off(OUT_C);
+}
+
+/*
+ * getPosition: Put the robot in the especified
+ * direction.
+ */
+
+
+sub getPosition(int finalPosition, int vel, int dist) {
+	int rotate;
+	int ch = 255;
+	bool go = TRUE;
+	int br = 0;
+	div_t r;
+	div_t ir;
+	int garraVel = 80;
+  int i = 1;
+  int t = 0;
+
+      while((go)&& (checkUS() > dist)){
+                   ClearScreen();
+                NumOut(1,LCD_LINE7,checkUS());
+
+                br = degrees(20, finalPosition);
+                rotate = finalPosition - br;
+                OnRev(OUT_C,garraVel);
+                NumOut(1,LCD_LINE8,br);
+                
+
+
+
+                
+                while ((abs(rotate) >= 0)&&(go)&& (checkUS() > dist)) {
+                      ClearScreen();
+
+                      NumOut(1,LCD_LINE7,checkUS());
+                      
+                      MotorStartSync(OUT_A, OUT_B, 70);
+
+                      Wait(50);
+                      OnRev(OUT_C,garraVel);
+
+                      br = degrees(20, finalPosition);
+                      
+                      rotate = finalPosition - br;
+                      NumOut(1,LCD_LINE8,br);
+
+                      if (rotate > 2){ //Debe corregir para la derecha
+                            NumOut(1,LCD_LINE8,br);
+                            if(checkUS() < dist){
+                                         break;
+
+                            }
+
+                         if (rotate > 7) {
+
+                            OnFwdSyncPID(OUT_AB, 63, -20, 30, 50, 90);
+                            Wait(100);
+                        } else {
+
+                            OnFwdSyncPID(OUT_AB, 63, -(2)*rotate, 30, 50, 90);
+                            Wait(100);
+
+                        }
+
+                      }
+                      else if(rotate <=2 && rotate !=0) {   //Debe corregir a la izquierda
+
+                            NumOut(1,LCD_LINE8,br);
+                             if(checkUS() < dist){
+                                         break;
+
+                            }
+
+                           if (rotate < 7) {
+                              OnFwdSyncPID(OUT_AB, 40, 23, 30, 50, 90);
+                              Wait(150);
+                           } else {
+                                OnFwdSyncPID(OUT_AB, 40, (2)*rotate, 30, 50, 90);
+                                Wait(150);
+                           }
+                      
+                      }
+
+
+               }
+
+
+       }
+
+}
+
+/*
+* turnLeft
+*
+*/
+
+// Revisado
+sub turnLeft(){
+         MotorRotateAngle(OUT_B, 75, 650, 450, 0, 0);
+         MotorStopSync(OUT_A, OUT_B);
+         Wait(50);
+
+}
+
+sub turnRight(){
+         MotorRotateAngle(OUT_A, 100, 680, 450, 0, 0);
+         MotorStopSync(OUT_A, OUT_B);
+         Wait(50);
+}
+
+sub stepBack(){
+    OnRev(MOTORS,40);
+    Wait(900);
+    Off(MOTORS);
+}
+
+sub stepForward(){
+    OnFwd(MOTORS,60);
+    Wait(1000);
+    Off(MOTORS);
+}
+
+/*
+* It makes to turn the robot 180 degrees counterclockwise. 
+*/
+sub rightBackLeft(int direction){
+OnFwd(OUT_AB,100);
+Wait(700);
+    stepBack();
+    clawUp();
+    stepBack();
+    stepBack();
+
+    PlaySound(5);
+    Off(MOTORS);
+    Wait(50);
+}
+
+sub verColor(){
+    RemoteStartProgram(1, "Color.rxe");
+}
+
+/*
+  Función que calcula el mínimo entre dos números
+*/
+int minimo(int a, int b){
+  if (a <= b) {
+    return a;
+  } else {
+    return b;
+  }
+}
+
+/*
+ Función que recibe un angulo y hace que el robot gire hasta alcanzarlo
+ Supone que los motores estan en los puertos A y B
+ Se pueden utilizar los puntos cardinales relativos como argumento.
+ */
+sub girar(int dir){
+
+  bool listo = FALSE;
+  int error = 0;
+  while (!listo){
+  /*error es el calculo de la mínima distancia circular entre el angulo actual
+    y el deseado
+   Si esta distancia es mayor a el error máximo establecido el algorítmo seguirá
+    produciendo
+   un giro
+   */
+     error = minimo((dir + 360 - degrees(20, dir))%360 , (degrees(20, dir)+360-dir)%360);
+    if( error >= ERRORGRADOS){
+      /*
+       Verifica si la distancia menor entre los angulos se alcanza por la izquierda
+      */
+      int fuerza = ((error*(100-velMin)/180) + velMin);
+      if((dir-degrees(20, dir) + 360)%360 < 180){
+        Off(MOTORS);
+        /* gira a la izquierda con mayor velocidad mientras mayor sea el error
+           donde la mínima velocidad es el valor de la variable velMin
+        */
+
+        OnRevSync(MOTORS, fuerza, -100);
+      } else {
+        Off(MOTORS);
+        /* gira a la derecha con mayor velocidad mientras mayor sea el error
+           donde la mínima velocidad es el valor de la variable velMin
+        */
+        OnFwdSync(MOTORS, fuerza, 100);
+      }
+    } else{
+      Off(MOTORS);
+      listo = TRUE;
+    }
+  }
+}
+
+
+
+
+
+// despegarPared() : Chequea si Floesta muy pegada a la pared, si lo esta Flo se mueve para atrás
+sub despegarPared(){
+    int l = checkUS();
+    Wait(500);
+
+    if ((l < 23) || (l >= 255) || (l <= 0)){
+        OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+        Wait(600);    //1000
+        MotorStopSync(OUT_A, OUT_B);
+        Wait(50);
+    }
+
+}
+
+/*whereIsFlo(): Procedimiento que se encarga de garantizar que Flo vea a la direccion
+  correcta antes de moverse. Si no lo esta, girara hasta ver a la direccion correcta
+
+  parametros: int direction - la direccion a la cual flo debería de estar.
+              int lado      - lado de la cancha donde se esté jugando.
+
+  Importante: Caso Borde
+  Como los grados están representados en un arreglo circular entre 0 y 359 grados, puede ocurrir el caso de que una
+  direccion requiera ser representada en dos rango (direcMin < direction < direcMin2) || (directMax < direction < directMax2)
+*/
+sub whereIsFlo(int direction, int lado){
+
+    //Rango Norte
+    int norteMin;
+    int norteMax;
+    int norteMin2; // Se usan si el Norte es caso borde
+    int norteMax2;
+
+    //Rango Sur
+    int surMin;
+    int surMax;
+    int surMin2; // Se usan si el Sur es caso borde
+    int surMax2;
+
+    //Rango Este
+    int esteMin;
+    int esteMax;
+    int esteMin2; // Se usan si el Este es caso borde
+    int esteMax2;
+
+    //Rango Oeste
+    int oesteMin;
+    int oesteMax;
+    int oesteMin2; // Se usan si el Oeste es caso borde
+    int oesteMax2;
+
+    int p = degrees(20, direction);
+    Wait(500);
+
+    if (lado == 0){
+        //Rango Norte
+        norteMin = 91;
+        norteMax = 121;
+
+        //Rango Sur
+        surMin = 270;
+        surMax = 304;
+
+        //Rango Este
+        esteMin = 164;
+        esteMax = 204;
+
+        //Rango Oeste
+        oesteMin = 0;
+        oesteMax = 39;
+    }else{
+
+        //Rango Norte
+        norteMin = 255;
+        norteMax = 307;
+
+        //Rango Sur
+        surMin = 93;
+        surMax = 109;
+
+        //Rango Este
+        esteMin = 0;
+        esteMin2 =22;
+        esteMax = 46;
+        esteMax2 =359;
+
+        //Rango Oeste
+        oesteMin = 173;
+        oesteMax = 220;
+    }
+
+    if (direction == north){
+        while(!(norteMin <= p && p <= norteMax)){    //si el norte es el caso borde : while(!((norteMin <= p && p <= norteMin2) || (norteMax <= p && p <= norteMax2)))
+              despegarPared();
+              //turnLeft();
+              girar(direction);
+              Wait(200);
+              p = degrees(20, direction);
+              Wait(500);
+        }
+    }
+    if (direction == south){
+        while(!((surMin <= p && p <= surMin2))){
+        //while(!(surMin <= p && p <= surMax)){    //si el sur es el caso borde : while(!((surMin <= p && p <= surMin2) || (surMax <= p && p <= surMax2)))
+              despegarPared();
+              //turnLeft();
+              girar(direction);
+              Wait(200);
+              p = degrees(20, direction);
+              Wait(500);
+        }
+    }
+    if (direction == east){
+
+      while(!((esteMin <= p && p <= esteMin2) || (esteMax <= p && p <= esteMax2))) {    //si el este es el caso borde : while(!((esteMin <= p && p <= esteMin2) || (esteMax <= p && p <= esteMax2)))
+              despegarPared();
+              //turnLeft();
+              girar(direction);
+              Wait(200);
+              p = degrees(20, direction);
+              Wait(500);
+        }
+    }
+    if (direction == west){
+        while(!(oesteMin <= p && p <= oesteMax)){    //si el oeste es el caso borde : while(!((oesteMin <= p && p <= oesteMin2) || (oesteMax <= p && p <= oesteMax2)))
+              despegarPared();
+              //turnLeft();
+              girar(direction);
+              Wait(200);
+              p = degrees(20, direction);
+              Wait(500);
+        }
+    }
+
+
+
+}
+
+
+sub moveToWall(int direction, int dist, int lado){
+
+    int ch;
+    ch = 255;
+    
+   //whereIsFlo(direction, lado);
+
+   RemoteStartProgram(1, "garritaabajo.rxe");
+   Wait(1500); // 1200 900
+
+    while(ch > dist && inTime(10000*7*3.2)){
+             ch = checkUS();
+             MotorStartSync(OUT_A, OUT_B, 70);
+             Wait(150);
+             OnRev(OUT_C,100);
+             getPosition(direction,70, dist);
+             }
+
+             if (!(inTime(10000*7*3.2))){
+                final();
+             }
+
+   OnRev(OUT_C,100);
+   Wait(700);
+   Off(OUT_ABC);
+   MotorRotateAngleSync(OUT_A, OUT_B, 100, -180, 800, 0, 0);
+   Wait(900);
+   if (direction == north){
+     OnRevSyncEx(OUT_AB, 50, 0, RESET_ALL);
+     Wait(20);
+   }
+   RemoteStopProgram(1);
+   Wait(1000);
+   RemoteStartProgram(1, "garrita.rxe");
+   Wait(400);
+   OnFwd(OUT_C,100);
+   Wait(200);
+   OnRev(OUT_C,100);
+   Wait(500);
+   Off(OUT_C);
+   MotorStopSync(OUT_A, OUT_B);
+   Wait(50);
+
+}
+
+sub moveToWall2(int direction, int dist, int lado){
+
+    int ch;
+    ch = 255;
+
+   //whereIsFlo(direction, lado);
+
+   RemoteStartProgram(1, "garritaabajo.rxe");
+   Wait(1500); // 1200 900
+
+    while(ch > dist && inTime(10000*7*3.2)){
+             ch = checkUS();
+             MotorStartSync(OUT_A, OUT_B, 70);
+             Wait(150);
+             OnRev(OUT_C,100);
+             getPosition(direction,70,dist);
+             RemoteStartProgram(1, "MilanesaAzul.rxe");
+    }
+
+             if (!(inTime(10000*7*3.2))){
+                final();
+             }
+             
+   RemoteStopProgram(1);
+   Wait(1500);
+   OnRev(OUT_C,100);
+   Wait(500);
+   Off(OUT_ABC);
+   MotorRotateAngleSync(OUT_A, OUT_B, 100, -180, 800, 0, 0);
+   Wait(900);
+   if (direction == north){
+      OnRevSyncEx(OUT_AB, 50, 0, RESET_ALL);
+      Wait(20);
+   }
+
+   RemoteStopProgram(1);
+   Wait(1000);
+   OnRevSyncEx(OUT_AB, 50, 0, RESET_ALL);
+   Wait(100);
+   RemoteStartProgram(1, "garrita.rxe");
+   Wait(400);
+   OnFwd(OUT_C,100);
+   Wait(200);
+   OnRev(OUT_C,100);
+   Wait(500);
+   Off(OUT_C);
+   MotorStopSync(OUT_A, OUT_B);
+   Wait(50);
+
+}
+
+
+
+sub moveToWall3(int direction, int dist, long tiempo){
+
+    int ch;
+    ch = 255;
+
+ //  whereIsFlo(direction, lado);
+
+   RemoteStartProgram(1, "garritaabajo.rxe");
+   Wait(1200); //900
+
+    while(ch > dist && inTime(tiempo)){
+             ch = checkUS();
+             MotorStartSync(OUT_A, OUT_B, 70);
+             Wait(150);
+             OnRev(OUT_C,100);
+             getPosition(direction,70, dist);
+
+             }
+
+             if (!(inTime(tiempo))){
+                final();
+                PlaySound(3);
+             }
+
+   OnRev(OUT_C,100);
+   Wait(500);
+   Off(OUT_ABC);
+   MotorRotateAngleSync(OUT_A, OUT_B, 100, -180, 800, 0, 0);
+   Wait(900);
+   if (direction == north){
+     OnRevSyncEx(OUT_AB, 50, 0, RESET_ALL);
+     Wait(20);
+   }
+   RemoteStopProgram(1);
+   Wait(1000);
+   RemoteStartProgram(1, "garrita.rxe");
+   Wait(400);
+   OnFwd(OUT_C,100);
+   Wait(200);
+   OnRev(OUT_C,100);
+   Wait(500);
+   Off(OUT_C);
+   MotorStopSync(OUT_A, OUT_B);
+   Wait(50);
+
+}
+
+sub getPositionPegaso(int finalPosition, int vel, int dist) {
+	int rotate;
+	int ch = 255;
+	bool go = TRUE;
+	int br = 0;
+	div_t r;
+	div_t ir;
+  int i = 1;
+  int t = 0;
+
+      while((go)&& (checkUS() > dist)){
+                ClearScreen();
+                NumOut(1,LCD_LINE7,checkUS());
+
+                br = degrees(20, finalPosition);
+                rotate = finalPosition - br;
+
+                NumOut(1,LCD_LINE8,br);
+
+
+
+
+
+                while ((abs(rotate) >= 0)&&(go)&& (checkUS() > dist)) {
+                      ClearScreen();
+
+                      NumOut(1,LCD_LINE7,checkUS());
+
+                      OnRevSync(OUT_AB, 100, 0);
+
+                      Wait(50);
+
+
+                      br = degrees(20, finalPosition);
+
+                      rotate = finalPosition - br;
+                      NumOut(1,LCD_LINE8,br);
+
+                      if (rotate > 2){ //Debe corregir para la derecha
+                            NumOut(1,LCD_LINE8,br);
+                            if(checkUS() < dist){
+                                         break;
+
+                            }
+
+                         if (rotate > 7) {
+
+                            OnRevSyncPID(OUT_AB, 63, -20, 30, 50, 90);
+                            Wait(100);
+                        } else {
+
+                            OnRevSyncPID(OUT_AB, 63, -(2)*rotate, 30, 50, 90);
+                            Wait(100);
+
+                        }
+
+                      }
+                      else if(rotate <=2 && rotate !=0) {   //Debe corregir a la izquierda
+
+                            NumOut(1,LCD_LINE8,br);
+                             if(checkUS() < dist){
+                                         break;
+
+                            }
+
+                           if (rotate < 7) {
+                              OnRevSyncPID(OUT_AB, 40, 23, 30, 50, 90);
+                              Wait(150);
+                           } else {
+                                OnRevSyncPID(OUT_AB, 40, (2)*rotate, 30, 50, 90);
+                                Wait(150);
+                           }
+
+                      }
+
+
+               }
+
+
+       }
+
+}
+
+
+sub moveToWallPegaso(int direction, int dist, int lado){
+
+    int ch;
+    ch = 255;
+
+   //whereIsFlo(direction, lado);
+
+
+
+    while(ch > dist && inTime(10000*7*3.2)){
+             ch = checkUS();
+             OnRevSync(OUT_AB, 100, 0);
+             Wait(150);
+             getPositionPegaso(direction,70, dist);
+             }
+
+             if (!(inTime(10000*7*3.2))){
+                final();
+             }
+
+   Off(OUT_AB);
+   //MotorRotateAngleSync(OUT_A, OUT_B, 100, -180, 800, 0, 0);
+   Wait(900);
+   if (direction == north){
+     OnFwdSyncEx(OUT_AB, 50, 0, RESET_ALL);
+     Wait(20);
+   }
+   MotorStopSync(OUT_A, OUT_B);
+   Wait(50);
+}

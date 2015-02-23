@@ -1,0 +1,63 @@
+#include "Motor.nxc"
+#include "proceduresPegaso.nxc"
+
+/*
+Lado 0 =   190
+Lado 1 = 29
+*/
+
+task main() {
+
+    //int lado = 0; //ladoPared = 1 ladoMesa = 0
+
+    startTime();
+    inicio();
+    int ch = 0;
+    int este;
+    int oeste;
+    int p;
+       int l;
+
+    bool unaVez = TRUE;
+
+    SetSensorLowspeed(S2);   // Inicializo la Ultrasonido
+    SetSensorLowspeed(S3);   // Inicializo la Brujula
+   // SetSensorTouch(S1);      // Inicializo el sensor de choque
+        /*
+      if(lado == 1){
+            //medio = 61;
+            setInitialPosition(324, 133, 63, 234); // Norte, Sur, Este, Oeste
+    }else{
+            //medio = 230;
+            setInitialPosition(151, 344, 61, 79);
+    }  */
+
+     OnRevSyncEx(OUT_AB, 29, 0, RESET_ALL);
+     Wait(800);
+     MotorRotateAngle(OUT_B, 100, 85, 150, 0, 0);
+     Wait(50);
+     MotorStopSync(OUT_A, OUT_B);
+     Wait(50);
+     
+     OnFwdSyncEx(OUT_AB, 100, 0, RESET_ALL);
+     Wait(500);
+
+     while(TRUE){
+           RemoteStartProgram(1, "AlasAbajo.rxe");
+           Wait(100);
+           moveToWallPegaso(100,58, 0);
+           MotorStopSync(OUT_A, OUT_B);
+           Wait(50);
+           RemoteStartProgram(1, "AlasArriba.rxe");
+           Wait(5000);
+           // Cableado.
+           MotorStartSync(OUT_A, OUT_B, 70);
+           Wait(7000);
+           RemoteStopProgram(1);
+           Wait(1000);
+           // No cableado
+           /*
+           moveToWall(,,);
+           */
+     }
+}

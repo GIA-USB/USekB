@@ -1,0 +1,19 @@
+#include "Motor.nxc"
+
+task main(){
+     //while (TRUE) {
+           /*OnRev(OUT_A, 45);
+           Wait(00);
+           OnFwd(OUT_A, 45);
+          Wait(100);
+             */
+           OnFwd(OUT_C,10);
+           Wait(450);
+
+           MotorRotateAngle(OUT_AB, 85, -120, 450, 0, 0);
+           Wait(200);
+           
+           OnRev(OUT_C,10);
+           Wait(300);
+     //}
+}

@@ -1,0 +1,61 @@
+/* watchColor es una funcion que obtiene la media
+* de los colores que ve. Pero elimina valores
+* extremos. (>= 50 o <= 0)
+*/
+
+int watchColor(int p) {
+   int sopa;
+   int res;
+   int i = 0;
+   res = 0;
+   while (i <= p) {
+         sopa = SensorValue(S3);
+      if (sopa < 60) {
+         res = res + sopa;
+         i = i + 1;
+
+      }
+   }
+   res = res/p;
+   return res;
+}
+
+sub patear(){
+      MotorRotateAngle(OUT_B, 100, -60, 450, 0, 0);
+      Off(OUT_B);
+      Wait(400);
+      MotorRotateAngle(OUT_B, 100, 80, 300, 0, 0);
+      Off(OUT_B);
+      Wait(1000); //500
+      MotorRotateAngle(OUT_A, 100, -90, 950, 0, 0);
+      Wait(200);
+      MotorRotateAngle(OUT_A, 100, 100, 800, 0, 0);
+      Wait(100);
+}
+
+sub botar(){
+         MotorRotateAngle(OUT_B, 100, 100, 300, 0, 0);
+         Off(OUT_B);
+         Wait(150);
+         MotorRotateAngle(OUT_B, 100, -40, 300, 0, 0);
+         Off(OUT_B);
+         Wait(100);
+}
+
+sub bajarPata(){
+    MotorRotateAngle(OUT_A, 100, -50, 950, 0, 0);
+    Wait(50);
+}
+
+sub palito(){
+    MotorRotateAngle(OUT_B, 85, 160, 300, 0, 0);
+    Off(OUT_B);
+    Wait(85);
+    MotorRotateAngle(OUT_B, 85, -160, 300, 0, 0);
+    Off(OUT_B);
+    Wait(85);
+    MotorRotateAngle(OUT_B, 100, 70, 300, 0, 0);
+    Off(OUT_B);
+    Wait(85);
+}
+

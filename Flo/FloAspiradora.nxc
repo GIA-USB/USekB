@@ -1,0 +1,99 @@
+#include "procedures1.nxc"
+
+task main() {
+
+     int lado = 0; //ladoPared = 1 ladoMesa = 0
+
+     startTime();
+     inicio();
+
+     SetSensorLowspeed(S2);   // Inicializo la Ultrasonido
+     SetSensorLowspeed(S4);   // Inicializo la Brujula
+     
+     if(lado == 1){
+            setInitialPosition(324, 133, 63, 234); // Norte, Sur, Este, Oeste
+    }else{
+            setInitialPosition(150, 337, 231, 76);
+    }
+
+    while (TRUE) {
+
+          moveToWall(north,28,lado);
+
+          MotorStartSync(OUT_A,OUT_B,90);
+          Wait(1400);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(70);
+     
+          turnRight();
+          Wait(750);
+          
+          girar(east);
+          OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+          Wait(1300);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(70);
+     
+          RemoteStartProgram(1, "garritaabajo.rxe");
+          Wait(1500);
+          OnRev(OUT_C,100);
+          MotorStartSync(OUT_A,OUT_B,60);
+          Wait(2500);
+          MotorStopSync(OUT_A,OUT_B);
+          RemoteStartProgram(1, "garrita.rxe");
+          Wait(1500);
+          
+          turnRight();
+          Wait(750);
+
+
+          OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+          Wait(1500);
+          MotorStopSync(OUT_A, OUT_B);
+          Wait(50);
+
+          moveToWall(south,28,lado);
+          Wait(3000);
+          PlaySound(5);
+          Wait(1000);
+          RemoteStartProgram(1, "garritaabajo.rxe");
+          Wait(1500);
+
+          SaludoChino();
+          Wait(300);
+          RemoteStartProgram(1, "Color.rxe");
+          Wait(17000); //8000
+          SaludoChino();
+          Wait(200);
+          SaludoChino();
+          Wait(200);
+          SaludoChino();
+          Wait(200);
+          SaludoChino();
+          Wait(15000);  //33000
+     
+          if (checkUS() < 23) {
+          
+             OnRevSync(OUT_AB,60,RESET_ALL);
+             Wait(100);
+             
+          }else {
+          
+             MotorStartSync(OUT_A,OUT_B,60);
+             Wait(500);
+             MotorStopSync(OUT_A, OUT_B);
+             Wait(70);
+          }
+          
+          turnRight();
+          Wait(750);
+          MotorStartSync(OUT_A,OUT_B,60);
+          Wait(800);
+          MotorStopSync(OUT_A,OUT_B);
+          Wait(70);
+          turnRight();
+          Wait(750);
+     
+  }
+
+}

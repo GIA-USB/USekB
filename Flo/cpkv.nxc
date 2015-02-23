@@ -1,0 +1,346 @@
+#include "procedures1.nxc"
+
+task main() {
+
+    int lado = 0; //ladoPared = 1 ladoMesa = 0
+
+    startTime();
+    inicio();
+    int ch = 0;
+    int medio;
+    int p;
+    int l;
+    bool sur = TRUE;
+    
+    bool unaVez = TRUE;
+    
+    SetSensorLowspeed(S2);   // Inicializo la Ultrasonido
+    SetSensorLowspeed(S4);   // Inicializo la Brujula
+
+      if(lado == 1){
+            medio = 35;
+            setInitialPosition(289, 98, 34, 196);  //(320,134,60,234);   // Norte, Sur, Este, Oeste
+    }                                        //LadoGradas: (153, 341, 228, 87)  medio: 227    sur 360 300
+    else{
+            medio = 240;
+            setInitialPosition(148, 344, 235, 84);// LadoMesas: (347, 150, 84, 233) medio:  84
+    }
+
+      
+while(verFin()){
+
+    moveToWall(east,23, lado);
+    if (!(verFin())){
+       break;
+    }
+
+    MotorStartSync(OUT_A,OUT_B,60);
+    Wait(500);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(70);
+    
+    turnLeft();
+    Wait(800); //710
+    
+    OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+    Wait(1500);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+    moveToWall(north,25, lado);
+    if (!(verFin())){
+       break;
+    }
+    
+    OnFwdSyncEx(OUT_AB, 60, 0, RESET_ALL);
+    Wait(1300);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+    turnLeft();
+    Wait(200);
+    
+    OnRevSyncEx(OUT_AB, 85, 0, RESET_ALL);
+    Wait(1100);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+    
+
+    moveToWall(west,23, lado);
+    if (!(verFin())){
+       break;
+    }
+    
+    turnLeft();
+    Wait(700);
+
+    RemoteStopProgram(1);
+    Wait(500);
+
+    RemoteStartProgram(1, "garritaabajo.rxe");
+    Wait(1500); // 1200 900
+    
+    if (unaVez){
+    
+       /*RemoteStartProgram(1, "garrita.rxe");
+           Wait(400);
+          while (sur) {
+                      p = degrees(20, south);
+                      l = checkUS();
+                       Wait(500);
+                      if ((330 <= p) && (p <= 350)) {
+                        sur = FALSE;
+                      } else {
+                        if ((l < 23) || (l >= 255) || (l <= 0)){
+                               OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+                               Wait(1000);
+                                MotorStopSync(OUT_A, OUT_B);
+                                Wait(50);
+                            }
+
+                            turnLeft();
+                            Wait(200);
+                      }
+          }
+              */
+         sur = TRUE;
+         RemoteStartProgram(1,"garritaabajo.rxe")
+         Wait(840);
+       SaludoChino();
+       Wait(300);
+       RemoteStartProgram(1, "Color.rxe");
+       Wait(20000); //17000
+       if (!(verFin())){
+          break;
+       }
+       SaludoChino();
+       Wait(200);
+       SaludoChino();
+       Wait(200);
+       SaludoChino();
+       Wait(200);
+       SaludoChino();
+       Wait(15000);  //33000
+       
+       if (!(verFin())){
+          break;
+       }
+
+       unaVez = FALSE;
+    }else{
+    
+          RemoteStartProgram(1, "garrita.rxe");
+           Wait(400);
+          while (sur) {
+                      p = degrees(20, south);
+                      l = checkUS();
+                       Wait(500);
+                      if ((95 <= p) && (p <= 140)) {
+                        sur = FALSE;
+                      } else {
+                        if ((l < 23) || (l >= 255) || (l <= 0)){
+                               OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+                               Wait(1000);
+                                MotorStopSync(OUT_A, OUT_B);
+                                Wait(50);
+                            }
+
+                            turnLeft();
+                            Wait(200);
+                      }
+
+         sur = TRUE;
+         RemoteStartProgram(1, "garritaabajo.rxe");
+         Wait(840);
+         SaludoChino();
+         Wait(100);
+         RemoteStartProgram(1, "subColor.rxe");
+         Wait(10000);
+         SaludoChino();
+         Wait(500);
+
+       }
+         if (!(verFin())){
+            break;
+         }
+         SaludoChino();
+         Wait(2000);
+         SaludoChino();
+         Wait(2000);
+         SaludoChino();
+         Wait(2000);
+         SaludoChino();
+         Wait(2000);
+         SaludoChino();
+         Wait(8500);
+         if (!(verFin())){
+                 break;
+         }
+    
+    }
+
+    RemoteStopProgram(1);
+    Wait(1000);
+    RemoteStartProgram(1, "BajarPata.rxe");
+    Wait(3000);
+    
+    if (!(verFin())){
+          break;
+    }
+    
+    MotorStartSync(OUT_A,OUT_B,50);
+    Wait(100);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(100);
+
+    RemoteStopProgram(1);
+    Wait(1000);
+
+    if (checkUS() < 25){
+               OnRevSyncEx(OUT_AB, 70, 0, RESET_ALL);
+                        Wait(100);
+              MotorStopSync(OUT_A, OUT_B);
+                         Wait(50);
+    }
+
+    RemoteStartProgram(1, "garrita.rxe");
+    Wait(1000); //400
+
+    OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+    Wait(100);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+    turnLeft();
+    Wait(600);
+
+    OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+    Wait(1500); //1900
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+
+    moveToWall(medio, 25, lado);
+    if (!(verFin())){
+       break;
+    }
+    
+    MotorStartSync(OUT_A,OUT_B,60);
+    Wait(500);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(70);
+
+    turnLeft();
+    Wait(680);
+
+    OnRevSyncEx(OUT_AB, 80, 0, RESET_ALL);
+    Wait(2000);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+    
+    moveToWall(north,25, lado);
+    if (!(verFin())){
+       break;
+    }
+
+    OnFwdSyncEx(OUT_AB, 60, 0, RESET_ALL);
+    Wait(840);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+    turnLeft();
+
+    OnRevSyncEx(OUT_AB, 65, 0, RESET_ALL);
+    Wait(2000);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+
+    moveToWall(west,23, lado);
+    if (!(verFin())){
+       break;
+    }
+    
+    turnLeft();
+    Wait(700);
+
+    moveToWall(south,23, lado);
+    if (!(verFin())){
+       break;
+    }
+    
+    turnLeft();
+    Wait(700);
+    
+    OnRevSyncEx(OUT_AB, 65, 0, RESET_ALL);
+    Wait(2000);
+    MotorStopSync(OUT_A, OUT_B);
+    Wait(50);
+    
+}
+    RemoteStartProgram(1, "garrita.rxe");
+    Wait(400);
+    
+   RemoteStartProgram(1, "garrita.rxe");
+           Wait(400);
+          while (sur) {
+                      p = degrees(20, south);
+                      l = checkUS();
+                       Wait(500);
+                      if ((95 <= p) && (p <= 140)) {
+                        sur = FALSE;
+                      } else {
+                        if ((l < 23) || (l >= 255) || (l <= 0)){
+                               OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+                               Wait(1000);
+                                MotorStopSync(OUT_A, OUT_B);
+                                Wait(50);
+                            }
+
+                            turnLeft();
+                            Wait(200);
+                      }
+          }
+
+         sur = TRUE;
+         RemoteStartProgram(1,"garritaabajo.rxe");
+         Wait(840);
+         
+
+            if((95 <= p) && (p <= 140)){
+                      if (((l < 23) || (l >= 255) || (l <= 0))){
+                            OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+                            Wait(1000);
+                            MotorStopSync(OUT_A, OUT_B);
+                            Wait(50);
+                      }
+                            RemoteStartProgram(1, "garritaabajo.rxe");
+                            Wait(840);
+
+                            while (TRUE) {
+                                  SaludoChino();
+                                  Wait(100);
+                                  RemoteStartProgram(1, "Color.rxe");
+                                  Wait(8000);
+                                  SaludoChino();
+                                  Wait(500);
+                            }
+
+                       }  else {
+
+                            if ((l < 23) || (l >= 255) || (l <= 0)){
+                               OnRevSyncEx(OUT_AB, 100, 0, RESET_ALL);
+                               Wait(1000);
+                                MotorStopSync(OUT_A, OUT_B);
+                                Wait(50);
+                            }
+
+                            turnLeft();
+                            Wait(200);
+              }
+
+          }
+
+    }
+ 
+
+
